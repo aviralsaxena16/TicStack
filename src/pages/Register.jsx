@@ -1,12 +1,14 @@
 import React,{useState} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/Auth'
 
 const Register = () => {
     const [name,setName]=useState()
     const [email, setEmail]=useState()
     const [password, setPassword]=useState()
     const navigate = useNavigate()
+    const {login} = useAuth()
 
     const handleSubmit=(e)=>{
         e.preventDefault()
@@ -17,6 +19,8 @@ const Register = () => {
         }
         else{
             alert('Registered Successfully')
+            login()
+            navigate('/login')
         }
     })}
     

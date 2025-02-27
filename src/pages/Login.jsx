@@ -1,11 +1,12 @@
 import React,{useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../context/Auth'
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
+    const {login}=useAuth()
     const navigate = useNavigate()
     
     const handleLogin = async (e) => {
@@ -21,6 +22,7 @@ const Login = () => {
             }
             else{
                 alert('Registeration Successful')
+                login()
                 navigate('/')
             }
             
