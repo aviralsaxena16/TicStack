@@ -2,6 +2,7 @@ import React,{useState} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/Auth'
+import './Register.css'
 
 const Register = () => {
     const [name,setName]=useState()
@@ -25,20 +26,27 @@ const Register = () => {
     })}
     
   return (
-    <div>
-        <h1>Register</h1>
-        <form>
-            <label>Name:</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
-            <label>Email:</label>
-            <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}/>
-            <label>Password:</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-            <input type="submit" onClick={handleSubmit} value="Submit"/>
-        </form>
-
+  <div className="register-container">
+    <div className="register-box">
+      <h1>Register</h1>
+      <form>
+        <div className="form-group">
+          <label>Name:</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+        </div>
+        <div className="form-group">
+          <label>Email:</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+        </div>
+        <div className="form-group">
+          <label>Password:</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+        </div>
+        <button type="submit" className="submit-btn" onClick={handleSubmit}>Register</button>
+      </form>
     </div>
-  )
+  </div>
+)
 }
 
 export default Register;
