@@ -5,6 +5,7 @@ import { useAuth } from '../context/Auth';
 import './Login.css'; // Import the CSS file
 import chess from '../../src/assets/chess.jpg'
 import logo from '../../src/assets/logo.png'
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -31,7 +32,24 @@ const Login = () => {
         }
     };
 
+    const handleGoogleLoginSuccess = async (response) => {
+        try {
+            const res = await axios.post('http://localhost:5000/auth/google/callback', { token: response.credential });
+            if (res.data.success) {
+                alert('Google Login Successful');
+                login();
+                navigate('/');
+            } else {
+                alert('Google Login Failed');
+            }
+        } catch (error) {
+            console.error('Google Login Error:', error);
+        }
+    };
+
+
     return (
+        <GoogleOAuthProvider clientId="531410137605-phcrcg17b16bp5rlqid92b89a416i44t.apps.googleusercontent.com">
         <div className="login-page">
             <div className="login-container">
                 <div className="login-form-container">
@@ -70,7 +88,12 @@ const Login = () => {
                         </form>
 
                         <a href="#" className="forgot-password">Forgot password?</a>
-
+                        <div className="google-login">
+                                <GoogleLogin 
+                                    onSuccess={handleGoogleLoginSuccess} 
+                                    onError={() => alert('Google Login Failed')} 
+                                />
+                            </div>
                         <div className="register-prompt">
                             Don't have an account? <a href="/register" className="register-link">Register here</a>
                         </div>
@@ -83,6 +106,7 @@ const Login = () => {
                 </div>
             </div>
         </div>
+        </GoogleOAuthProvider>
     );
 };
 

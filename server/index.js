@@ -3,9 +3,12 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import UserModel from './models/UserModel.js';
 import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const client = new OAuth2Client("531410137605-phcrcg17b16bp5rlqid92b89a416i44t.apps.googleusercontent.com");
 
 // Middleware
 app.use(cors());
@@ -98,9 +101,70 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
+app.post('/auth/google/callback', async (req, res) => {
+    try {
+        const { token } = req.body;
+        
+        if (!token) {
+            return res.status(400).json({ success: false, message: "Token is required" });
+        }
+
+        // Verify Google Token
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: "531410137605-phcrcg17b16bp5rlqid92b89a416i44t.apps.googleusercontent.com"
+        });
+
+        const payload = ticket.getPayload();
+        const { name, email, picture } = payload;
+
+        // Check if user exists
+        let user = await UserModel.findOne({ email });
+
+        if (!user) {
+            // Register new user if not found
+            user = new UserModel({
+                name,
+                email,
+                googleId: payload.sub, // Add Google ID
+                picture: picture,
+                password: "" // No password for Google users
+            });
+            await user.save();
+        }
+
+        // Generate JWT Token
+        const authToken = jwt.sign(
+            { id: user._id }, 
+            "Never Mind", // Note: In production, use an environment variable for the secret
+            { expiresIn: '1h' }
+        );
+
+        res.json({
+            success: true,
+            token: authToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                picture: user.picture
+            }
+        });
+    } catch (error) {
+        console.error("Google Auth Error:", error);
+        res.status(400).json({ 
+            success: false, 
+            message: "Google login failed",
+            error: error.message 
+        });
+    }
+});
+
 // Start server
 connectDB().then(() => {
     app.listen(5000, () => {
         console.log(`Server running on port :5000`);
     });
 });
+
