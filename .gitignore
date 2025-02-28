@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 *.env
 server/Auth.env
+.env
+*.env
+node_modules/
