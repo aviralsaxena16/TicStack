@@ -104,53 +104,35 @@ app.post('/login', async (req, res) => {
 
 app.post('/auth/google/callback', async (req, res) => {
     try {
-        const { token } = req.body;
-        
+        const { token } = req.body;      
         if (!token) {
             return res.status(400).json({ success: false, message: "Token is required" });
         }
-
-        // Verify Google Token
-        const ticket = await client.verifyIdToken({
+        const ticket = await client.verifyIdToken({             // Verify Google Token
             idToken: token,
             audience: "531410137605-phcrcg17b16bp5rlqid92b89a416i44t.apps.googleusercontent.com"
         });
-
-        const payload = ticket.getPayload();
+        const payload = ticket.getPayload();           //Get the image, name,email as info
         const { name, email, picture } = payload;
 
-        // Check if user exists
-        let user = await UserModel.findOne({ email });
+        let user = await UserModel.findOne({ email }); // Check if user exists
 
         if (!user) {
             // Register new user if not found
-            user = new UserModel({
-                name,
-                email,
-                googleId: payload.sub, // Add Google ID
-                picture: picture,
-                password: "" // No password for Google users
-            });
+            user = new UserModel({name, email, googleId: payload.sub, picture: picture, password: ""});
             await user.save();
         }
 
-        // Generate JWT Token
-        const authToken = jwt.sign(
+        const authToken = jwt.sign(          // Generate JWT Token
             { id: user._id }, 
             "Never Mind", // Note: In production, use an environment variable for the secret
             { expiresIn: '1h' }
         );
-
         res.json({
             success: true,
             token: authToken,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                picture: user.picture
-            }
-        });
+            user: {id: user._id, name: user.name, email: user.email, picture: user.picture }});
+            
     } catch (error) {
         console.error("Google Auth Error:", error);
         res.status(400).json({ 
