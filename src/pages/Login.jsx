@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/Auth';
-import './Login.css'; // Import the CSS file
+import './auth.css'; // Import the CSS file
 import chess from '../../src/assets/chess.jpg'
 import logo from '../../src/assets/logo.png'
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
@@ -38,7 +38,7 @@ const Login = () => {
             if (res.data.success) {
                 alert('Google Login Successful');
                 login();
-                navigate('/');
+                navigate('/home');
             } else {
                 alert('Google Login Failed');
             }

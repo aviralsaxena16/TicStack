@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: url('../assets/bg.jpg') no-repeat center center/cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  position: relative;
+}
+
+/* Dark Overlay for Better Readability */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+}
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.landing-content {
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+h1 {
+    font-size: 5rem;
+    font-family: 'Press Start 2P', cursive;
+    margin-bottom: 2rem;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 
+      0 0 10px rgba(255, 107, 107, 0.8),
+      0 0 20px rgba(255, 107, 107, 0.5),
+      0 0 30px rgba(255, 107, 107, 0.3);
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  p {
+    font-size: 2rem;
+    font-family: 'Russo One', sans-serif;
+    color: #ff6b6b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 2px;
+    line-height: 1.5;
+    margin-top: 1rem;
+  }
+
+/* Button Styling */
+.btn {
+  background: #ff0055;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+  background: #ff00ff;
+  box-shadow: 0 0 15px #ff00ff;
+}
+
+/* Keyframes for Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055;
+  }
+  to {
+    text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+  }
+}

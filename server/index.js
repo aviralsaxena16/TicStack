@@ -5,14 +5,34 @@ import UserModel from './models/UserModel.js';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
+import http from 'http'
+import {Server} from 'socket.io'
+import MessageModel from './models/MessageModel.js';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 const client = new OAuth2Client("531410137605-phcrcg17b16bp5rlqid92b89a416i44t.apps.googleusercontent.com");
 
-// Middleware
-app.use(cors());
+const server = http.createServer(app);
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
 app.use(express.json());
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+        credentials: true,
+        allowedHeaders: ["my-custom-header"],
+    },
+    transports: ['websocket'],
+    pingTimeout: 60000,
+    pingInterval: 25000
+});
 
 // MongoDB Connection with retry logic
 const connectDB = async () => {
@@ -143,10 +163,62 @@ app.post('/auth/google/callback', async (req, res) => {
     }
 });
 
+io.on("connection", (socket) => {
+    console.log("A user connected:", socket.id);
+    socket.on("disconnect", () => {
+        console.log("Client disconnected:", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+        console.log("Connection error:", err);
+    });
+    // Send existing messages when a user connects
+    socket.on("getMessages", async () => {
+        try {
+            const messages = await MessageModel.find()
+                .sort({ timestamp: -1 })
+                .limit(50);
+            socket.emit("previousMessages", messages);
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+        }
+    });
+
+    // Listen for chat messages
+    socket.on("message", async (data) => {
+        try {
+            const { userId, username, content } = data;
+            
+            // Create and save new message
+            const newMessage = new MessageModel({
+                userId,
+                username,
+                content,
+            });
+            await newMessage.save();
+
+            // Broadcast message to all connected clients
+            io.emit("message", {
+                _id: newMessage._id,
+                userId,
+                username,
+                content,
+                timestamp: newMessage.timestamp
+            });
+        } catch (error) {
+            console.error("Error broadcasting message:", error);
+            socket.emit("error", "Failed to send message");
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("A user disconnected:", socket.id);
+    });
+});
 // Start server
 connectDB().then(() => {
-    app.listen(5000, () => {
-        console.log(`Server running on port :5000`);
+    server.listen(PORT, () => {
+        console.log(`Server running on port :${PORT}`);
     });
 });
 

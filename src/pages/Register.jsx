@@ -1,52 +1,33 @@
-import React,{useState} from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/Auth'
-import './Register.css'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './auth.css';
 
 const Register = () => {
-    const [name,setName]=useState()
-    const [email, setEmail]=useState()
-    const [password, setPassword]=useState()
-    const navigate = useNavigate()
-    const {login} = useAuth()
-
-    const handleSubmit=(e)=>{
-        e.preventDefault()
-        axios.post('http://localhost:5000/register',{name,email,password}).then((response)=>{
-        if (response=='Email already exists'){
-            alert('Email already exists')
-            navigate('/login')
-        }
-        else{
-            alert('Registered Successfully')
-            login()
-            navigate('/login')
-        }
-    })}
-    
   return (
-  <div className="register-container">
-    <div className="register-box">
-      <h1>Register</h1>
-      <form>
-        <div className="form-group">
-          <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <h1>Register</h1>
         </div>
-        <div className="form-group">
-          <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+        <form>
+          <div className="form-group">
+            <input type="text" placeholder="Username" required />
+          </div>
+          <div className="form-group">
+            <input type="email" placeholder="Email" required />
+          </div>
+          <div className="form-group">
+            <input type="password" placeholder="Password" required />
+          </div>
+          <button type="submit" className="auth-button">Register</button>
+        </form>
+        <div className="auth-links">
+          <div className="divider">or</div>
+          <Link to="/login">Already have an account? Login</Link>
         </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-        </div>
-        <button type="submit" className="submit-btn" onClick={handleSubmit}>Register</button>
-      </form>
+      </div>
     </div>
-  </div>
-)
-}
+  );
+};
 
 export default Register;
