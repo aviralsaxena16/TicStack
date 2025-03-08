@@ -9,7 +9,7 @@ const LandingPage = () => {
       <div className="landing-container">
         <div className="landing-content">
           <h1>Welcome to TicStack</h1>
-          <p>Level up your gaming experience—Login, Compete, Conquer! 🎮🔥</p>
+          <p>Level up your gaming experience—Login, Compete, Conquer the gaming world! 🎮🔥</p>
         </div>
       </div>
     </>
